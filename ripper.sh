@@ -13,12 +13,13 @@ do
     if [[ -n $title ]]; then
       vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
           -t "TITLE=$title"
-      saveto="$musicdir/$artist/$album/$title.ogg"
-      echo "Saved song $title by $artist to $saveto"
-      if [[ ! -a "$artist/$album" ]]; then
-        mkdir -p "$artist/$album"
+      # Sanitize filenames
+      saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
+      echo "Saved song $title by $artist to $saveto${title//\/ /}.ogg"
+      if [[ ! -a $saveto ]]; then
+        mkdir -p "$saveto"
       fi
-      mv tmp.ogg "$saveto"
+      mv tmp.ogg "$saveto${title//\/ /}"
     fi
     echo "RECORDING"
     pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
