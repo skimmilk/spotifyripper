@@ -15,11 +15,11 @@ do
           -t "TITLE=$title"
       # Sanitize filenames
       saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
-      echo "Saved song $title by $artist to $saveto${title//\/ /}.ogg"
+      echo "Saved song $title by $artist to $saveto/${title//\/ /}.ogg"
       if [[ ! -a $saveto ]]; then
         mkdir -p "$saveto"
       fi
-      mv tmp.ogg "$saveto${title//\/ /}"
+      mv tmp.ogg "$saveto/${title//\/ /}"
     fi
     echo "RECORDING"
     pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
