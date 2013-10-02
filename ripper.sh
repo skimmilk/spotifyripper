@@ -12,7 +12,7 @@ do
     killall pacat 2> /dev/null
     if [[ -n $title ]]; then
       vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
-          -t "TITLE=$title" -t "METADATA_BLOCK_PICTURE=$picture"
+          -t "TITLE=$title"
       # Sanitize filenames
       saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
       echo "Saved song $title by $artist to $saveto/${title//\/ /}.ogg"
