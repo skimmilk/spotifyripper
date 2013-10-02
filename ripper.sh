@@ -20,13 +20,13 @@ do
         mkdir -p "$saveto"
       fi
       mv tmp.ogg "$saveto/${title//\/ /}.ogg"
-      if [[ -s cover.png ]] && [[ ! -a "$saveto/cover.png" ]]; then
-        mv cover.png "$saveto/cover.png"
+      if [[ -s cover.jpg ]] && [[ ! -a "$saveto/cover.jpg" ]]; then
+        mv cover.jpg "$saveto/cover.jpg"
       fi
       artist=""
       album=""
       title=""
-      rm -f cover.png
+      rm -f cover.jpg
     fi
     echo "RECORDING"
     pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
@@ -43,7 +43,7 @@ do
       string=$(echo "$string" | cut -d: -f3)
       string="http://open.spotify.com/track/$string"
       string=$(wget -qO- $string | grep "big-cover" | cut -d'"' -f2)
-      wget -qO- "$string" > cover.png
+      wget -qO- "$string" > cover.jpg
     fi
   fi
 done
