@@ -12,7 +12,7 @@ do
     killall pacat 2> /dev/null
     if [[ -n $title ]]; then
       vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
-          -t "TITLE=$title"
+          -t "TITLE=$title" -t "tracknumber=$tracknumber"
       # Sanitize filenames
       saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
       echo "Saved song $title by $artist to $saveto/${title//\/ /}.ogg"
@@ -26,6 +26,7 @@ do
       artist=""
       album=""
       title=""
+      tracknumber=""
       rm -f cover.jpg
     fi
     echo "RECORDING"
@@ -40,10 +41,10 @@ do
     elif [[ $variant == "album" ]]; then
       album="$string"
     elif [[ $variant == "url" ]]; then
-      string=$(echo "$string" | cut -d: -f3)
-      string="http://open.spotify.com/track/$string"
-      string=$(wget -qO- $string | grep "big-cover" | cut -d'"' -f2)
-      wget -qO- "$string" > cover.jpg
+      # Get the track number and download the coverart using an outside script
+      # Much much easier to debug
+      # url comes last after artist info
+      tracknumber="$(./trackify.sh $string $title)"
     fi
   fi
 done
