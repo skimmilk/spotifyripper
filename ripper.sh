@@ -9,6 +9,7 @@ fi
 ./notify.sh | while read line
 do
   if [[ $line == "__SWITCH__" ]]; then
+    killall oggenc 2> /dev/null
     killall pacat 2> /dev/null
     if [[ -n $title ]]; then
       vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
