@@ -6,6 +6,8 @@ else
   musicdir=$1
 fi
 
+pasink=$(pactl info | grep "Default Sink" | cut '-d ' -f3)
+
 ./notify.sh | while read line
 do
   if [[ $line == "__SWITCH__" ]]; then
@@ -33,9 +35,7 @@ do
     echo "RECORDING"
     # Another reinstallation of Ubuntu, another thing broken
     #pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
-    parec --format=s16le \
-          --device="$(pactl list | grep "Monitor Source" \
-              | head -n1 | awk '{ print $3 }')" \
+    parec --format=s16le --device="$pasink.monitor" \
           | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
 
   else
