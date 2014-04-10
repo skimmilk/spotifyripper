@@ -31,21 +31,31 @@ do
       rm -f cover.jpg
     fi
     echo "RECORDING"
-    pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
+    # Another reinstallation of Ubuntu, another thing broken
+    #pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
+    parec --format=s16le \
+          --device="$(pactl list | grep "Monitor Source" \
+              | head -n1 | awk '{ print $3 }')" \
+          | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
+
   else
     variant=$(echo "$line"|cut -d= -f1)
     string=$(echo "$line"|cut -d= -f2)
     if [[ $variant == "artist" ]]; then
       artist="$string"
+      echo "Artist = $string"
     elif [[ $variant == "title" ]]; then
       title="$string"
+      echo "Title = $string"
     elif [[ $variant == "album" ]]; then
       album="$string"
+      echo "Album = $string"
     elif [[ $variant == "url" ]]; then
       # Get the track number and download the coverart using an outside script
       # Much much easier to debug
       # url comes last after artist info
       tracknumber="$(./trackify.sh $string $title)"
+      echo "Track number = $tracknumber"
     fi
   fi
 done
