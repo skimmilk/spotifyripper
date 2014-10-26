@@ -6,13 +6,35 @@ else
   musicdir=$1
 fi
 
-pasink=$(pactl info | grep "Default Sink" | cut '-d ' -f3)
+# Get the client index of Spotify
+spotify=$(pacmd list-sink-inputs | while read line; do
+  [[ -n $(echo $line | grep "index:") ]] && index=$line
+  [[ -n $(echo $line | grep Spotify) ]] && echo $index && exit
+done | cut -d: -f2)
+
+if [[ -z $spotify ]]; then
+  echo "Spotify is not running"
+  exit
+fi
+
+# Determine if spotify.monitor is already set up
+if [[ -z $(pactl list short | grep spotify.monitor) ]]; then
+  pactl load-module module-null-sink 'sink_name=spotify'
+fi
+
+# Move Spotify sound output back to default at exit
+pasink=$(pactl stat | grep Sink | cut -d: -f2)
+trap 'pactl move-sink-input $spotify $pasink' EXIT
+
+# Move Spotify to its own sink so recorded output will not get corrupted
+pactl move-sink-input $spotify spotify
 
 ./notify.sh | while read line
 do
   if [[ $line == "__SWITCH__" ]]; then
-    killall oggenc 2> /dev/null
-    killall pacat 2> /dev/null
+    killall oggenc 2>/dev/null
+    killall parec 2>/dev/null
+
     if [[ -n $title ]]; then
       vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
           -t "TITLE=$title" -t "tracknumber=$tracknumber"
@@ -33,10 +55,9 @@ do
       rm -f cover.jpg
     fi
     echo "RECORDING"
-    # Another reinstallation of Ubuntu, another thing broken
-    #pacat --record -d 1 | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
-    parec --format=s16le --device="$pasink.monitor" \
-          | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null &
+    parec -d spotify.monitor | oggenc -b 192 -o tmp.ogg --raw - 2>/dev/null\
+      &disown
+    trap 'pactl move-sink-input $spotify $pasink && killall oggenc && killall parec' EXIT
 
   else
     variant=$(echo "$line"|cut -d= -f1)
@@ -52,9 +73,7 @@ do
       echo "Album = $string"
     elif [[ $variant == "url" ]]; then
       # Get the track number and download the coverart using an outside script
-      # Much much easier to debug
-      # url comes last after artist info
-      tracknumber="$(./trackify.sh $string $title)"
+      tracknumber=$(./trackify.sh "$string")
       echo "Track number = $tracknumber"
     fi
   fi

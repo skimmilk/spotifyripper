@@ -2,14 +2,13 @@
 
 string=$(echo "$1" | cut -d: -f3)
 string="http://open.spotify.com/track/$string"
-wget -qO- $string > tmp.html
+wget -q -O tmp.html "$string"
 
 # Echo out track number
-grep 'class="track" itemprop="name"' tmp.html |\
-        cut -d '>' -f2 | cut -d '<' -f1 | cat -n |\
-        grep "$2" | awk '{print $1}' | head -n1
+grep open.spotify.com/track tmp.html | cut -d\" -f4 | \
+  awk "{if (\$0 == \"$string\") {print NR}}"
 
-string=$(grep "big-cover" tmp.html | cut -d'"' -f2)
-wget -qO- "$string" > cover.jpg
+string=$(grep background: tmp.html | cut '-d/' -f 3,4,5 | cut '-d)' -f1)
+wget -q -O cover.jpg "$string"
 
 rm -f tmp.html
