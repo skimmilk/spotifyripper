@@ -1,5 +1,7 @@
 #!/bin/bash
 
+script_dir=$(dirname $(readlink -f $0))
+
 if [[ -z $1 ]]; then
   musicdir="."
 else
@@ -29,7 +31,7 @@ trap 'pactl move-sink-input $spotify $pasink' EXIT
 # Move Spotify to its own sink so recorded output will not get corrupted
 pactl move-sink-input $spotify spotify
 
-$(dirname $(readlink -f $0))/notify.sh | while read line
+$script_dir/notify.sh | while read line
 do
   if [[ $line == "__SWITCH__" ]]; then
     killall oggenc 2>/dev/null
@@ -73,7 +75,7 @@ do
       echo "Album = $string"
     elif [[ $variant == "url" ]]; then
       # Get the track number and download the coverart using an outside script
-      tracknumber=$(./trackify.sh "$string")
+      tracknumber=$(`$script_dir/trackify.sh` "$string")
       echo "Track number = $tracknumber"
     fi
   fi
