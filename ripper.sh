@@ -42,11 +42,11 @@ do
           -t "TITLE=$title" -t "tracknumber=$tracknumber"
       # Sanitize filenames
       saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
-      echo "Saved song $title by $artist to $saveto/${artist} - ${title//\/ /}.ogg"
+      echo "Saved song $title by $artist to $saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
       if [[ ! -a $saveto ]]; then
         mkdir -p "$saveto"
       fi
-      mv tmp.ogg "$saveto/${artist} - ${title//\/ /}.ogg"
+      mv tmp.ogg "$saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
       if [[ -s cover.jpg ]] && [[ ! -a "$saveto/cover.jpg" ]]; then
         mv cover.jpg "$saveto/cover.jpg"
       fi
