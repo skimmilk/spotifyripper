@@ -8,6 +8,11 @@ Run with:
 ./ripper.sh your_music_directory
 ```
 
+Requirements (Ubuntu):
+```bash
+sudo apt install -y jq vorbis-tools wget
+```
+
 If no directory is specified, it dumps into the current directory.
 Requires that Spotify is running and has played music *before* the ripper is ran and no other music software is running.
 
