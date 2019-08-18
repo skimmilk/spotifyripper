@@ -1,14 +1,11 @@
 #!/bin/bash
 
-string=$(echo "$1" | cut -d: -f3)
-string="http://open.spotify.com/track/$string"
-wget -q -O tmp.html "$string"
+ENTITY=$(wget -q -O - "${1}" | grep Spotify.Entity | cut -d "=" -f 2- | cut -d ";" -f 1)
 
-# Echo out track number
-grep open.spotify.com/track tmp.html | cut -d\" -f4 | \
-  awk "{if (\$0 == \"$string\") {print NR}}"
+# downloaod cover
+ALBUM_IMAGE=$(echo ${ENTITY} | jq -r '.album.images[] | select(.height == 300) | .url')
+wget -q -O cover.jpg "${ALBUM_IMAGE}"
 
-string=$(grep background: tmp.html | cut '-d/' -f 3,4,5 | cut '-d)' -f1)
-wget -q -O cover.jpg "$string"
-
-rm -f tmp.html
+# return track number
+TRACK_NUMBER=$(echo ${ENTITY} | jq .track_number)
+echo ${TRACK_NUMBER}
