@@ -1,12 +1,24 @@
 #!/bin/bash
 
 script_dir=$(dirname $(readlink -f $0))
+export TEMP_DIR=/tmp/spotifyripper.$$
 
 if [[ -z $1 ]]; then
   musicdir="."
 else
   musicdir=$1
 fi
+
+function cleanup {
+  rm -f ${TEMP_DIR}/*.jpg ${TEMP_DIR}/*.ogg
+  rm -d ${TEMP_DIR}
+}
+
+# cleanup temporary directory
+trap cleanup SIGINT
+
+# create temporary directory
+[ -d ${TEMP_DIR} ] || mkdir ${TEMP_DIR}
 
 # Get the client index of Spotify
 spotify=$(pacmd list-sink-inputs | while read line; do
@@ -38,7 +50,7 @@ do
     killall parec 2>/dev/null
 
     if [[ -n $title ]]; then
-      vorbiscomment -a tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
+      vorbiscomment -a ${TEMP_DIR}/tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
           -t "TITLE=$title" -t "tracknumber=$tracknumber"
       # Sanitize filenames
       saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
@@ -46,18 +58,18 @@ do
       if [[ ! -a $saveto ]]; then
         mkdir -p "$saveto"
       fi
-      mv tmp.ogg "$saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
-      if [[ -s cover.jpg ]] && [[ ! -a "$saveto/cover.jpg" ]]; then
-        mv cover.jpg "$saveto/cover.jpg"
+      mv ${TEMP_DIR}/tmp.ogg "$saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
+      if [[ -s ${TEMP_DIR}/cover.jpg ]] && [[ ! -a "$saveto/cover.jpg" ]]; then
+        mv ${TEMP_DIR}/cover.jpg "$saveto/cover.jpg"
       fi
       artist=""
       album=""
       title=""
       tracknumber=""
-      rm -f cover.jpg
+      rm -f ${TEMP_DIR}/cover.jpg
     fi
     echo "RECORDING"
-    parec -d spotify.monitor | oggenc -b 320 -o tmp.ogg --raw - 2>/dev/null\
+    parec -d spotify.monitor | oggenc -b 320 -o ${TEMP_DIR}/tmp.ogg --raw - 2>/dev/null\
       &disown
     trap 'pactl move-sink-input $spotify $pasink && killall oggenc && killall parec' EXIT
 

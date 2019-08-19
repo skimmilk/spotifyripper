@@ -4,7 +4,7 @@ ENTITY=$(wget -q -O - "${1}" | grep Spotify.Entity | cut -d "=" -f 2- | cut -d "
 
 # downloaod cover
 ALBUM_IMAGE=$(echo ${ENTITY} | jq -r '.album.images[] | select(.height == 300) | .url')
-wget -q -O cover.jpg "${ALBUM_IMAGE}"
+wget -q -O ${TEMP_DIR}/cover.jpg "${ALBUM_IMAGE}"
 
 # return track number
 TRACK_NUMBER=$(echo ${ENTITY} | jq .track_number)
