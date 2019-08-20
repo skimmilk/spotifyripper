@@ -53,7 +53,7 @@ do
       vorbiscomment -a ${TEMP_DIR}/tmp.ogg -t "ARTIST=$artist" -t "ALBUM=$album"\
           -t "TITLE=$title" -t "tracknumber=$tracknumber"
       # Sanitize filenames
-      saveto="$musicdir/${artist//\/ /}/${album//\/ /}"
+      saveto="$musicdir/${album//\/ /}/"
       echo "Saved song $title by $artist to $saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
       if [[ ! -a $saveto ]]; then
         mkdir -p "$saveto"
