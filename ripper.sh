@@ -76,6 +76,12 @@ do
   else
     variant=$(echo "$line"|cut -d= -f1)
     string=$(echo "$line"|cut -d= -f2)
+    ENTITY=$(wget -q -O - "${string}" | grep Spotify.Entity | cut -d "=" -f 2- | cut -d ";" -f 1)
+
+    # downloaod cover
+    ALBUM_IMAGE=$(echo "${ENTITY}" | jq -r '.album.images[] | select(.width == 300) | .url')
+    [ -n "${ALBUM_IMAGE}" ] && wget -q -O "${TEMP_DIR}/cover.jpg" "${ALBUM_IMAGE}"
+
     if [[ $variant == "artist" ]]; then
       artist="$string"
       echo "Artist = $string"
@@ -87,7 +93,7 @@ do
       echo "Album = $string"
     elif [[ $variant == "url" ]]; then
       # Get the track number and download the coverart using an outside script
-      tracknumber=$($script_dir/trackify.sh "$string")
+      tracknumber=$(echo ${ENTITY} | jq .track_number)
       echo "Track number = $tracknumber"
     fi
   fi
