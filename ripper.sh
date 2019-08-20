@@ -54,6 +54,9 @@ do
           -t "TITLE=$title" -t "tracknumber=$tracknumber"
       # Sanitize filenames
       saveto="$musicdir/${album//\/ /}/"
+      if [[ "${DISC_NUMBER}" -gt 1 ]]; then
+        saveto="$saveto/DISC${DISC_NUMBER}/"
+      fi
       echo "Saved song $title by $artist to $saveto/$(printf "%02d" ${tracknumber}) - ${artist} - ${title//\/ /}.ogg"
       if [[ ! -a $saveto ]]; then
         mkdir -p "$saveto"
@@ -66,6 +69,7 @@ do
       album=""
       title=""
       tracknumber=""
+      DISC_NUMBER=""
       rm -f ${TEMP_DIR}/cover.jpg
     fi
     echo "RECORDING"
@@ -81,6 +85,9 @@ do
     # downloaod cover
     ALBUM_IMAGE=$(echo "${ENTITY}" | jq -r '.album.images[] | select(.width == 300) | .url')
     [ -n "${ALBUM_IMAGE}" ] && wget -q -O "${TEMP_DIR}/cover.jpg" "${ALBUM_IMAGE}"
+
+    # get disk no.
+    [ -n "${ENTITY}" ] && DISC_NUMBER=$(echo "${ENTITY}" | jq -r '.disc_number')
 
     if [[ $variant == "artist" ]]; then
       artist="$string"
