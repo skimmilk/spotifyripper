@@ -51,6 +51,8 @@ def create_directory(path_album):
 
 
 def download_cover(art_url, file_cover):
+    global r
+
     # print("file_cover: " + file_cover)
     # print("art_url: " + art_url)
     if (art_url != ""):
