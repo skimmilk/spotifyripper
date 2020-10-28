@@ -130,7 +130,7 @@ def spotify_handler(*args):
             pre_subprocess = subprocess.Popen(["parec",  "--monitor-stream=" + str(spotify_sink_index), "--file-format=wav", file_input])
 
         # convert previous file
-        if (pre_file_input != "") and (pre_artist != ""):
+        if os.path.isfile(pre_file_input):
             pre_file_output = pre_file_input.replace(".wav", ".mp3")
             sound = AudioSegment.from_wav(pre_file_input)
             sound.export(pre_file_output, format="mp3", bitrate="160k", cover=pre_file_cover, tags={
