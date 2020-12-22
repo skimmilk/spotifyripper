@@ -1,5 +1,18 @@
 #!/bin/bash
 
+requirements=(
+  pactl
+  pacmd
+  spotify
+  vorbiscomment
+  oggenc
+  dbus-monitor
+)
+
+for i in ${requirements[*]}; do
+  command -v $i &> /dev/null || { echo "ERROR: $i not found"; exit 1; }
+done
+
 script_dir=$(dirname $(readlink -f $0))
 
 if [[ -z $1 ]]; then
