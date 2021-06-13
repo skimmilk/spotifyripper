@@ -140,6 +140,14 @@ def spotify_handler(*args):
                     "track": int(pre_track_number)
                 }
             )
+
+            pre_file_output_size = os.stat(pre_file_output).st_size
+            if pre_file_output_size < 1048576: 
+                print('\033[33m' + "Warning: small file " + pre_file_output + " \033[0m\n")
+
+            if pre_file_output_size > 10485760:
+                print('\033[33m' + "Warning: large file " + pre_file_output + " \033[0m\n")
+
             # print("DELETE " + pre_file_cover)
             os.remove(pre_file_cover)
             # print("DELETE " + pre_file_input)
