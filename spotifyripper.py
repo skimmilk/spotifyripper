@@ -1,14 +1,14 @@
 #! /usr/bin/env python3
 
-import os
-import requests
 import dbus
+import os
 import pprint
-import subprocess
-import re
 import pulsectl
-from gi.repository import GLib
+import re
+import requests
+import subprocess
 from dbus.mainloop.glib import DBusGMainLoop
+from gi.repository import GLib
 from pydub import AudioSegment
 
 pre_subprocess = None
