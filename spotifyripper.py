@@ -101,7 +101,7 @@ def spotify_handler(*args):
     if title != pre_title:
         print("Artist: " + artist)
         print("Album: " + album)
-        print("Title: " + title)
+        print("Title: " + str(track_number) + " - " + title)
         # print("Cover: " + art_url)
         # print("Track: " + str(track_number))
         print()
