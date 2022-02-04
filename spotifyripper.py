@@ -109,7 +109,7 @@ def spotify_handler(*args):
 
 
         # create dir
-        path_base = "/tmp/spotifyripper"
+        path_base = os.path.expanduser("~/Downloads/spotifyripper")
         if disc_number > 1:
             disc_number_str = str(disc_number) + " "
         else:
