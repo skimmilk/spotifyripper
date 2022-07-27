@@ -1,5 +1,8 @@
 #! /usr/bin/env python3
 
+# Install the required Python modules
+# pip install pulsectl pydub
+
 import dbus
 import os
 import pprint
