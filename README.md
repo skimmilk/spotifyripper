@@ -10,7 +10,7 @@ Run with:
 
 Requirements (Ubuntu):
 ```bash
-sudo apt install -y python3-pip python3-pydub ffmpeg libavcodec-extra
+sudo apt install -y python3-pip python3-pydub ffmpeg libavcodec-extra libmp3lame0
 pip3 install pulsectl
 ```
 
